@@ -1,0 +1,10 @@
+WASdev/ci.common
+GoogleCloudPlatform/cloud-sql-jdbc-socket-factory
+Netflix/hollow
+ReactiveX/RxJava
+alipay/sofa-bolt
+apache/parquet-mr
+cglib/cglib
+google/guice
+google/openrtb
+jboss/jboss-common-core

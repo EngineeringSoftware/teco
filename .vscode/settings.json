@@ -1,0 +1,17 @@
+{
+    "python.formatting.provider": "black",
+    "python.analysis.extraPaths": [
+        "./python"
+    ],
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "files.watcherExclude": {
+        "_work/downloads/": true,
+        "_work/raw-data/": true,
+        "_work/repos/filtered/licenses/": true
+    },
+    "java.import.exclusions": [
+        "**/_work/downloads/**"
+    ],
+    "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m",
+    "java.format.settings.url": ".vscode/java-format.xml"
+}

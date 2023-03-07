@@ -1,0 +1,5 @@
+trainer:
+  auto_select_gpus: true
+  gpus: -1
+  strategy: fsdp
+  precision: 16

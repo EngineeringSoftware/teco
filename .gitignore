@@ -1,0 +1,10 @@
+# Temp files
+
+*~
+\#*\#
+.DS_Store
+
+# Jetbrains
+
+.idea/
+*.iml
