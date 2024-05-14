@@ -1,0 +1,109 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "teco"
+dynamic = ["version"]
+description = "TeCo: test completion with LLM and code execution"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE.md" }
+authors = [
+    { name = "Pengyu Nie", email = "prodigy.sov@gmail.com" },
+    { name = "Rahul Banerjee", email = "rahulb517@utexas.edu" },
+    { name = "Junyi Jessy Li", email = "jessy@utexas.edu" },
+    { name = "Raymond J. Mooney", email = "mooney@utexas.edu" },
+    { name = "Milos Gligoric", email = "gligoric@utexas.edu" },
+]
+classifiers = [
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Testing",
+    "Programming Language :: Python :: 3.8",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+]
+dependencies = [
+    "seutil>=0.8.2",
+    "invoke~=2.0.0",
+    "tqdm",
+    "jsonargparse",
+    "more-itertools~=8.6.0",
+    "nltk~=3.6.7",
+    "numpy~=1.22.2",
+    "opt_einsum~=3.3.0",
+    "fairscale~=0.4.13",
+    "fuzzywuzzy[speedup]~=0.18.0",
+    "pytorch-lightning==1.7.7",
+    "rouge~=1.0.1",
+    "scikit-learn~=1.1.1",
+    "spdx-lookup~=0.3.3",
+    "torch-tb-profiler~=0.3.1",
+    "transformers~=4.25.1",
+    "tree-sitter==0.19.0",
+    "openai==0.26.5",
+]
+
+[project.optional-dependencies]
+dev = [
+    "hatch",
+    "pytest>=6",
+    "pytest-cov",
+    "coverage[toml]",
+    "black",
+    "ruff",
+    "ipykernel~=6.9.1",
+]
+vis = [
+    "seaborn~=0.11.2",
+    "plotly~=5.6.0",
+    "pytablewriter",
+    "tabulate",
+    "jsonnet",
+]
+dvc = ["dvc[azure]>=2.13.0", "azure-cli"]
+toga = ["javalang==0.13.0"]
+
+[project.urls]
+# TODO: setup and add documentation link, e.g., readthedocs (but usually after developing some code)  # Documentation = ""
+Issues = "https://github.com/EngineeringSoftware/teco/issues"
+Source = "https://github.com/EngineeringSoftware/teco"
+
+[tool.hatch.version]
+path = "src/teco/__about__.py"
+
+# testing (pytest) and coverage (coverage, pytest-cov)
+[tool.coverage.run]
+source_pkgs = ["teco", "tests"]
+branch = true
+parallel = true
+omit = ["src/teco/__about__.py"]
+
+[tool.coverage.paths]
+teco = ["src/teco", "*/teco/src/teco"]
+tests = ["tests", "*/teco/tests"]
+
+[tool.coverage.report]
+exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
+
+[tool.pytest.ini_options]
+addopts = "--ignore=deprecated --cov --cov-report xml:cov.xml"
+testpaths = ["tests"]
+
+# formatting (black)
+[tool.black]
+target-version = ["py38"]
+line-length = 120
+
+# linting (ruff)
+[tool.ruff]
+target-version = "py38"
+line-length = 120
+select = [
+    "E", # pycodestyle error
+    "F", # pyflakes
+    "I", # isort
+]
+
+[tool.ruff.isort]
+known-first-party = ["teco", "CodeBLEU"]

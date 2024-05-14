@@ -6,7 +6,7 @@ import seutil as su
 
 from teco.macros import Macros
 
-EXPECTED_MAVEN_VERSION = "3.8.3"
+EXPECTED_MAVEN_VERSION = "3.8"
 EXPECTED_JAVA_VERSION = "1.8.0"
 
 

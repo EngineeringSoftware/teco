@@ -11,7 +11,7 @@ Authors: Pengyu Nie, Rahul Banerjee, Junyi Jessy Li, Raymond Mooney, Milos Gligo
 ## Table of Contents
 
 - [Test Completion Corpus](#test-completion-corpus)
-- [Requirements](#requirements)
+- [Pre-requisites](#pre-requisites)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Citation](#citation)
@@ -45,24 +45,26 @@ Our test completion corpus contains several artifacts that are useful at differe
   - `config.json` contains the configuration for data filtering.
   - `filter_counter.json` contains the number of repositories/tests/statements that are filtered out.
 
-## Requirements
+## Pre-requisites
 
 The following software/hardware are required to run TeCo. GPU is required for training and evaluating the model, but not required if you only use the data collection and processing scripts.
 
 - Linux operating system
-- Anaconda or Miniconda
-- JDK 8
-- Maven 3.6 or above
+- [Miniconda](https://docs.anaconda.com/free/miniconda/index.html) or Anaconda
+- JDK 8 and Maven 3.8 (recommended to install via [sdkman](https://sdkman.io/))
 - Nvidia GPU with at least 8GB memory, and appropriate driver installed
+
+Run `./check-prereq.sh` to check if you have these pre-requisites ready.
+
+Debugging tips: you should have these commands available in PATH: `conda`, `java`, `mvn`, `nvidia-smi` (if you want to use GPU), `nvcc` (if you want to use system-installed cuda instead of letting conda install it).
 
 ## Installation
 
-Ensure the following commands can be found in PATH: `conda`, `java`, `mvn`. If GPU is available, ensure the following commands can be found in PATH: `nvcc`, `nvidia-smi`.
+Ensure that you met the [pre-requisites](#pre-requisites) before proceeding.
 
 Then, you can install a conda environment for TeCo by running the following script, which includes GPU support if GPU is available:
 ```
-cd python/
-./prepare-conda-env.sh
+./prepare-env.sh
 ```
 
 After this script finishes, you can activate the conda environment by running:
@@ -86,16 +88,16 @@ inv exp.train-codet5 --setup CSNm-Debug --overwrite --suffix teco-norr --args "-
 ### Notes on GPU support and alternative CUDA installation methods
 
 TL;DR:
-- If you have an older GPU (e.g., GTX 1080 Ti) and encounter CUDA-related errors, try `./prepare-conda-env.sh 10.2`.
-- If you want to use the system-wide installed CUDA (must be 10.2/11.3/11.6) together with cuDNN and NCCL, do `./prepare-conda-env.sh system`.
+- If you have an older GPU (e.g., GTX 1080 Ti) and encounter CUDA-related errors, try `./prepare-env.sh 10.2`.
+- If you want to use the system-wide installed CUDA (must be 10.2/11.3/11.6) together with cuDNN and NCCL, do `./prepare-env.sh system`.
 
 TeCo uses PyTorch 1.12.1, which requires CUDA with version 10.2/11.3/11.6, together with cuDNN and NCCL libraries. Our installation script detects whether GPU is available by checking the output of `nvidia-smi`. If GPU is not available, this script will install PyTorch in CPU-only mode, which is usually not suitable for training and evaluating the ML models (unless you know what you're doing), but enables the data collection and processing part of the TeCo to run. If GPU is available, this script will install CUDA 11.6, cuDNN, and NCCL in the conda environment. The installed CUDA is only usable when the conda environment is activated.
 
-You can change the CUDA version installed by adding an option to the installation script: `./prepare-conda-env.sh cuda_version`, where cuda_version can be cpu, system, 10.2, 11.3, 11.6. Use "cpu" if you want to install PyTorch in CPU-only mode even if GPU is available. Use "system" if you have already performed a system-wide installation of CUDA (must be one of 10.2/11.3/11.6), together with cuDNN and NCCL, and would like to use it instead of installing another CUDA. The default option "11.6" is usually fine especially if you're using a recent GPU, but if you're using an older GPU (e.g., GTX 1080 Ti) and encounter CUDA-related errors, you may want to try "10.2" instead.
+You can change the CUDA version installed by adding an option to the installation script: `./prepare-env.sh cuda_version`, where cuda_version can be cpu, system, 10.2, 11.3, 11.6. Use "cpu" if you want to install PyTorch in CPU-only mode even if GPU is available. Use "system" if you have already performed a system-wide installation of CUDA (must be one of 10.2/11.3/11.6), together with cuDNN and NCCL, and would like to use it instead of installing another CUDA. The default option "11.6" is usually fine especially if you're using a recent GPU, but if you're using an older GPU (e.g., GTX 1080 Ti) and encounter CUDA-related errors, you may want to try "10.2" instead.
 
 ## Usage
 
-This section includes the entire workflow of TeCo's experiments, from data collection and processing to model training and evaluation. Unless otherwise specified, all commands should be run in the `python/` directory and with the teco conda environment activated.
+This section includes the entire workflow of TeCo's experiments, from data collection and processing to model training and evaluation. Unless otherwise specified, all commands should be run in the project directory and with the teco conda environment activated.
 
 If you're only interested in the model training/evaluation part, download the part of our test completion corpus for that (the processed corpus + the repositories in the evaluation set), then jump to [Model training and evaluation](#model-training-and-evaluation).
 

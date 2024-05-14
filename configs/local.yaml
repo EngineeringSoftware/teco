@@ -3,8 +3,6 @@ data:
   val_batch_size: 8
 
 trainer:
-  # strategy: deepspeed_stage_2_offload
-  # precision: 16
   strategy: null
   devices: 1
   log_every_n_steps: 1
