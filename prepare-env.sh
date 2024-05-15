@@ -100,7 +100,7 @@ function prepare_env() {
         esac
 
         # Install other dependencies
-        ( cd ${_DIR} && pip install -e .[dev,vis])
+        ( cd ${_DIR} && pip install -e .[dev,vis] )
 }
 
 
