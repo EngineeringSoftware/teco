@@ -301,9 +301,7 @@ def eval_single(
     args += f" --model.model_cls={model_cls} --model.model_ckpt={Macros.work_dir}/exp/{setupt}/train/{trained}/model/{ckpt}.ckpt"
 
     decode_method, decode_params = DECODING_VARIANTS[decoding]
-    str_decode_params = (
-        '"{' + ", ".join(f"{k}: {v}" for k, v in decode_params.items()) + '}"'
-    )
+    str_decode_params = '"{' + ", ".join(f"{k}: {v}" for k, v in decode_params.items()) + '}"'
     args += f" --model.decode_method={decode_method} --model.decode_params={str_decode_params}"
 
     exp_eval(
@@ -357,9 +355,7 @@ def compute_runtime_metrics(
     debug: bool = False,
 ):
     models = [m.strip() for m in models.split(",")]
-    pred_dir_list = [
-        Macros.work_dir / "exp" / setup / eval_set / m / decoding for m in models
-    ]
+    pred_dir_list = [Macros.work_dir / "exp" / setup / eval_set / m / decoding for m in models]
     for pred_dir in pred_dir_list:
         if not pred_dir.exists():
             raise ValueError(f"{pred_dir} does not exist")
@@ -382,9 +378,7 @@ def compute_runtime_metrics(
 
 
 @task
-def rerank_runnable(
-    c, src: str, tgt: str, setup: str = "CSNm", decoding: str = "bs10-last"
-):
+def rerank_runnable(c, src: str, tgt: str, setup: str = "CSNm", decoding: str = "bs10-last"):
     c.run(
         f"""
         python -m teco.eval.rerank_runnable rerank\
@@ -392,4 +386,16 @@ def rerank_runnable(
             --tgt_model {tgt}\
             --setup {setup}\
             --decoding {decoding}"""
+    )
+
+
+@task
+def pull_model(c, suffix: str = "teco-norr", repo_id: str = "EngineeringSoftware/teco"):
+    c.run(
+        f"""
+        python -m teco.model.hf_adapter pull\
+            --model_cls CodeT5\
+            --exp_dir {Macros.work_dir}/exp/CSNm/train/CodeT5-{suffix}\
+            --repo_id {repo_id}\
+            --args "--model.inputs=[fields_notset,last_called_method,types_local,types_absent,similar_stmt_1_0,setup_teardown,focalm,sign,prev_stmts] --model.output=stmt --seed_everything=5295" """
     )

@@ -218,14 +218,19 @@ class DefaultLightningCLI(LightningCLI):
     def before_instantiate_classes(self) -> None:
         super().before_instantiate_classes()
 
-        config = self.config[self.config["subcommand"]]
+        if "subcommand" not in self.config:
+            subcommand = "unknown"
+            config = self.config
+        else:
+            subcommand = self.config["subcommand"]
+            config = self.config[self.config["subcommand"]]
 
         # Set up experiment directory
         if config["exp_dir"] is not None:
             exp_dir = Path(config["exp_dir"].abs_path).resolve()
             su.io.mkdir(exp_dir)
         else:
-            if self.config["subcommand"] == "fit":
+            if subcommand == "fit":
                 raise MisconfigurationException("exp_dir is required for training")
             exp_dir = su.io.mktmp_dir("pl")
             logger.info(
@@ -254,8 +259,8 @@ class DefaultLightningCLI(LightningCLI):
             )
 
         # Locate checkpoint, if there is one
-        if config["ckpt_path"] is None:
-            if config["ckpt_name"] is not None:
+        if config.get("ckpt_path") is None:
+            if config.get("ckpt_name") is not None:
                 ckpt_file = ckpt_dir / config["ckpt_name"]
             else:
                 ckpt_file = self.locate_ckpt(ckpt_dir)
@@ -265,7 +270,7 @@ class DefaultLightningCLI(LightningCLI):
             else:
                 ckpt_file = Path(config["ckpt_path"]).resolve()
 
-        if self.config["subcommand"] == "fit":
+        if subcommand == "fit":
             # If a checkpoint path is specified, assume we want to resume from it
             if config["ckpt_path"] is not None or config["ckpt_name"] is not None:
                 if config["resume"] is None:
@@ -284,7 +289,7 @@ class DefaultLightningCLI(LightningCLI):
                     logger.info(f"Removing checkpoints under {ckpt_dir}")
                     su.io.mkdir(ckpt_dir, fresh=True)
                     config["ckpt_path"] = None
-        elif self.config["subcommand"] == "predict":
+        elif subcommand == "predict":
             # Set up checkpoint to load
             if ckpt_file is not None:
                 config["ckpt_path"] = str(ckpt_file.resolve())
@@ -315,7 +320,7 @@ class DefaultLightningCLI(LightningCLI):
                 )
 
         # Set up logger
-        logger_save_dir = exp_dir / "logs" / self.config["subcommand"]
+        logger_save_dir = exp_dir / "logs" / subcommand
         logger_version = datetime.datetime.now().strftime("%y%m%d-%H%M%S")
         while (logger_save_dir / logger_version).exists():
             time.sleep(1)
