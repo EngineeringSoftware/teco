@@ -105,6 +105,16 @@ If you're only interested in the model training/evaluation part, download the pa
 
 These steps are for collecting the data for test completion, as well as extracting the code semantics. To simplify debugging, you can add `--debug` to each command to run them on a small subset of the corpus (but debugging each step requires running the previous step on the full corpus).
 
+*Inputs*: nothing in addition to the current repo, but in case some subject repositories have been removed from GitHub, you may download our archived repositories files (see [Corpus > repositories files](#repositories-files)).
+
+*Outputs*: processed corpus at `_work/data`.
+
+*Workflow*:
+
+- [Collecting code elements](#collecting-code-elements)
+- [Extracting syntax-level data](#extracting-syntax-level-data)
+- [Extracting code semantics](#extracting-code-semantics)
+
 #### Collecting code elements
 
 This step extracts the raw code elements sets from the repositories, i.e., the collection phase in our paper. (time: ~6h)
@@ -134,6 +144,24 @@ The additional code semantics data will be amended to `_work/data`.
 
 These steps are for training and evaluating TeCo model after data is collected.
 
+*Inputs*: 
+
+- the processed corpus at `_work/data` (prepared from [Data collection and processing](#data-collection-and-processing) or downloaded from [Corpus > processed corpus](#processed-corpus)).
+- the subject repositories needed during computing runtime metrics will be automatically cloned from GitHub, but in case some subject repositories have been removed from GitHub, you may download our archived repositories files (see [Corpus > repositories files](#repositories-files)).
+
+*Outputs*:
+
+- trained model at `_work/exp/CSNm/train/CodeT5-teco-norr`.
+- evaluation results at `_work/exp/CSNm/eval-{any,runnable-any,assert,runnable-assert}-stmt/test/SingleEvaluator-teco/bs10-last`
+
+*Workflow*:
+
+- [Splitting corpus](#splitting-corpus)
+- [Training model](#training-model) OR [Downloading model](#downloading-model)
+- [Evaluating model](#evaluating-model)
+- [Computing compilable/runnable status](#computing-compilablerunnable-status)
+- [Reranking via execution](#reranking-via-execution)
+
 #### Splitting corpus
 
 ```
@@ -155,6 +183,15 @@ To train the model: (time: ~20h on our machine with 4 GTX 1080Ti GPUs)
 inv exp.train-codet5 --setup CSNm --overwrite --suffix teco-norr --args "--model.inputs=[fields_notset,last_called_method,types_local,types_absent,similar_stmt_1_0,setup_teardown,focalm,sign,prev_stmts] --model.output=stmt --seed_everything=4197"
 ```
 The trained model will be stored in `_work/exp/CSNm/train/CodeT5-teco-norr`. Note that the model at this point is the variant of TeCo without reranking (i.e., TeCo-noRr in the paper). You still need to complete a few more steps below to obtain the full TeCo model.
+
+#### Downloading model
+
+Alternative to training the model yourself, you can download the version of the model we trained from 
+[🤗 hub](https://huggingface.co/EngineeringSoftware/teco):
+```
+inv exp.pull-model
+```
+The pulled model will also be stored in `_work/exp/CSNm/train/CodeT5-teco-norr`.
 
 #### Evaluating model
 
