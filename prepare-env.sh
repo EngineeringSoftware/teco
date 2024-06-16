@@ -53,7 +53,7 @@ function prepare_env() {
         
         # Preparation
         source ${conda_path}
-        conda env remove --name $env_name
+        conda env remove --name $env_name -y
         conda create --name $env_name python=3.8 pip -y
         conda activate $env_name
         pip install --upgrade pip
